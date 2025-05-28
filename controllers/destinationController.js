@@ -1,31 +1,44 @@
-const Destination = require('../models/Destination');
+const { Destination, Account } = require('../models/db');
 
-exports.getAll = async (req, res) => {
-  const dests = await Destination.find().populate('accountId');
+exports.createDestination = async (req, res) => {
+  try {
+    const { accountId, url, method, headers } = req.body;
+    const account = await Account.findByPk(accountId);
+    if (!account) return res.status(404).json({ error: 'Account not found' });
+    const dest = await Destination.create({ accountId, url, method, headers });
+    res.status(201).json(dest);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
+exports.getAllDestinations = async (req, res) => {
+  const dests = await Destination.findAll();
   res.json(dests);
 };
 
-exports.getByAccount = async (req, res) => {
-  const dests = await Destination.find({ accountId: req.params.accountId });
-  res.json(dests);
+exports.getDestinationById = async (req, res) => {
+  const dest = await Destination.findByPk(req.params.id);
+  if (!dest) return res.status(404).json({ error: 'Destination not found' });
+  res.json(dest);
 };
 
-exports.create = async (req, res) => {
-  const { accountId, url, method, headers } = req.body;
-  if (!url || !method || !headers) return res.status(400).json({ error: 'Missing required fields' });
-
-  const destination = new Destination({ accountId, url, method: method.toUpperCase(), headers });
-  await destination.save();
-  res.status(201).json(destination);
+exports.updateDestination = async (req, res) => {
+  const dest = await Destination.findByPk(req.params.id);
+  if (!dest) return res.status(404).json({ error: 'Destination not found' });
+  await dest.update(req.body);
+  res.json(dest);
 };
 
-exports.update = async (req, res) => {
-  const updated = await Destination.findByIdAndUpdate(req.params.id, req.body, { new: true });
-  if (!updated) return res.status(404).json({ error: 'Destination not found' });
-  res.json(updated);
-};
-
-exports.delete = async (req, res) => {
-  await Destination.findByIdAndDelete(req.params.id);
+exports.deleteDestination = async (req, res) => {
+  const dest = await Destination.findByPk(req.params.id);
+  if (!dest) return res.status(404).json({ error: 'Destination not found' });
+  await dest.destroy();
   res.json({ message: 'Destination deleted' });
+};
+
+exports.getDestinationsByAccount = async (req, res) => {
+  const accountId = req.params.id;
+  const destinations = await Destination.findAll({ where: { accountId } });
+  res.json(destinations);
 };

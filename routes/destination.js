@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/destinationController');
+const destCtrl = require('../controllers/destinationController');
 
-router.get('/', controller.getAll);
-router.get('/account/:accountId', controller.getByAccount);
-router.post('/', controller.create);
-router.put('/:id', controller.update);
-router.delete('/:id', controller.delete);
+router.post('/', destCtrl.createDestination);
+router.get('/', destCtrl.getAllDestinations);
+router.get('/:id', destCtrl.getDestinationById);
+router.put('/:id', destCtrl.updateDestination);
+router.delete('/:id', destCtrl.deleteDestination);
+router.get('/account/:id', destCtrl.getDestinationsByAccount);
 
 module.exports = router;

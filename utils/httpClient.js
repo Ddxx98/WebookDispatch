@@ -1,5 +1,11 @@
 const axios = require('axios');
 
-exports.send = async (method, url, data, headers) => {
-  return axios({ method, url, data, headers });
-};
+async function send(method, url, data, headers) {
+  method = method.toLowerCase();
+  const config = { method, url, headers };
+  if (method === 'get') config.params = data;
+  else config.data = data;
+  return axios(config);
+}
+
+module.exports = { send };

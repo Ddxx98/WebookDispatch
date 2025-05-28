@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/accountController');
+const accountCtrl = require('../controllers/accountController');
 
-router.get('/', controller.getAll);
-router.post('/', controller.create);
-router.put('/:id', controller.update);
-router.delete('/:id', controller.deleteAccount);
+router.post('/', accountCtrl.createAccount);
+router.get('/', accountCtrl.getAllAccounts);
+router.get('/:id', accountCtrl.getAccountById);
+router.put('/:id', accountCtrl.updateAccount);
+router.delete('/:id', accountCtrl.deleteAccount);
 
 module.exports = router;
